@@ -1,0 +1,254 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Cairo', sans-serif;
+    background: #f8f9fc;
+    color: #1f2937;
+    line-height: 1.6;
+}
+
+body.dark {
+    background: #0f172a;
+    color: #e2e8f0;
+}
+
+/* Sidebar */
+.sidebar {
+    width: 260px;
+    background: #1e2937;
+    color: white;
+    height: 100vh;
+    position: fixed;
+    padding: 20px;
+    z-index: 100;
+}
+
+.sidebar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.nav-btn {
+    width: 100%;
+    padding: 14px;
+    margin: 6px 0;
+    border: none;
+    border-radius: 10px;
+    background: rgba(255,255,255,0.08);
+    color: white;
+    text-align: right;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.nav-btn.active,
+.nav-btn:hover {
+    background: #3b82f6;
+}
+
+/* Main */
+.main {
+    margin-right: 260px;
+    padding: 30px;
+    min-height: 100vh;
+}
+
+/* Tabs */
+.tab { display: none; }
+.tab.active { display: block; }
+
+/* Titles */
+.page-title {
+    margin-bottom: 20px;
+    font-size: 2rem;
+    color: inherit;
+}
+
+.section-title {
+    margin: 30px 0 15px;
+    font-size: 1.4rem;
+}
+
+/* Grid */
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+/* Card */
+.card {
+    background: white;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    transition: 0.3s;
+}
+
+body.dark .card {
+    background: #1e2937;
+}
+
+.card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 12px 25px rgba(0,0,0,0.15);
+}
+
+.card img {
+    width: 100%;
+    height: 190px;
+    object-fit: cover;
+}
+
+.card-content {
+    padding: 15px;
+}
+
+/* Form */
+.form {
+    background: white;
+    padding: 25px;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    margin: 20px 0;
+}
+
+body.dark .form {
+    background: #1e2937;
+}
+
+input, select, textarea {
+    width: 100%;
+    padding: 12px;
+    margin: 8px 0;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    font-size: 1rem;
+}
+
+body.dark input,
+body.dark select,
+body.dark textarea {
+    background: #334155;
+    border-color: #475569;
+    color: white;
+}
+
+textarea {
+    resize: vertical;
+    font-family: inherit;
+}
+
+#imageUpload {
+    padding: 10px;
+    background: #f8f9fc;
+    border: 2px dashed #94a3b8;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+body.dark #imageUpload {
+    background: #334155;
+    border-color: #64748b;
+}
+
+/* Buttons */
+.btn {
+    padding: 10px 18px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: 0.3s;
+}
+
+.btn.primary {
+    background: #3b82f6;
+    color: white;
+}
+
+.btn.secondary {
+    background: #64748b;
+    color: white;
+}
+
+.form-buttons {
+    display: flex;
+    gap: 12px;
+    margin-top: 15px;
+}
+
+/* Stats */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 15px;
+    margin-bottom: 25px;
+}
+
+.stat-card {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    text-align: center;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+}
+
+body.dark .stat-card {
+    background: #1e2937;
+}
+
+/* Toast */
+.toast {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #10b981;
+    color: white;
+    padding: 14px 28px;
+    border-radius: 12px;
+    display: none;
+    z-index: 1000;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+}
+
+/* Settings */
+.setting-link {
+    display: block;
+    padding: 14px;
+    background: #f1f5f9;
+    color: #1e40af;
+    text-decoration: none;
+    border-radius: 10px;
+    margin-top: 10px;
+}
+
+body.dark .setting-link {
+    background: #334155;
+    color: #60a5fa;
+}
+
+.setting-link:hover {
+    background: #dbeafe;
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+    .sidebar {
+        transform: translateX(-100%);
+        transition: 0.4s;
+    }
+    .sidebar.open {
+        transform: translateX(0);
+    }
+    .main {
+        margin-right: 0;
+    }
+}
