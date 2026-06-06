@@ -40,19 +40,33 @@ function toggleTheme() {
 function showTab(tabId) {
     document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
     document.getElementById(tabId).classList.add('active');
+    if (tabId === 'prompts') populateCategories();
     render();
+}
+
+function populateCategories() {
+    const select = document.getElementById('category');
+    select.innerHTML = '<option value="">اختر القسم</option>';
+    
+    categories.forEach(cat => {
+        const option = document.createElement('option');
+        option.value = cat;
+        option.textContent = cat;
+        select.appendChild(option);
+    });
 }
 
 function toggleForm(editIndex = null) {
     const form = document.getElementById('form');
     form.classList.toggle('hidden');
+    populateCategories();
 
     if (editIndex !== null) {
         currentEditIndex = editIndex;
         const p = prompts[editIndex];
         document.getElementById('title').value = p.title || '';
         document.getElementById('image').value = p.image || '';
-        document.getElementById('category').value = p.category || 'ترند';
+        document.getElementById('category').value = p.category || '';
         document.getElementById('prompt').value = p.prompt || '';
         document.getElementById('desc').value = p.desc || '';
         document.getElementById('platform').value = p.platform || 'YouTube';
@@ -67,14 +81,11 @@ function toggleForm(editIndex = null) {
 function handleImageUpload() {
     const fileInput = document.getElementById('imageUpload');
     const urlInput = document.getElementById('image');
-    
-    fileInput.addEventListener('change', function(e) {
+    fileInput.addEventListener('change', e => {
         const file = e.target.files[0];
         if (file) {
             const reader = new FileReader();
-            reader.onload = function(ev) {
-                urlInput.value = ev.target.result;
-            };
+            reader.onload = ev => urlInput.value = ev.target.result;
             reader.readAsDataURL(file);
         }
     });
@@ -87,7 +98,7 @@ function addPrompt() {
     const newPrompt = {
         title,
         image: document.getElementById('image').value.trim(),
-        category: document.getElementById('category').value,
+        category: document.getElementById('category').value || 'غير مصنف',
         prompt: document.getElementById('prompt').value.trim(),
         desc: document.getElementById('desc').value.trim(),
         platform: document.getElementById('platform').value,
@@ -120,9 +131,7 @@ function deletePrompt(index) {
 }
 
 function copyPrompt(index) {
-    navigator.clipboard.writeText(prompts[index].prompt).then(() => {
-        showToast('تم نسخ البرومبت');
-    });
+    navigator.clipboard.writeText(prompts[index].prompt).then(() => showToast('تم نسخ البرومبت'));
 }
 
 function editPromptInHome(index) {
@@ -140,32 +149,31 @@ function render() {
 
     // Home Grid
     const homeGrid = document.getElementById('homeGrid');
-    homeGrid.innerHTML = '';
-    prompts.filter(p => p.showHome).forEach((p, i) => {
-        const originalIndex = prompts.indexOf(p);
-        homeGrid.innerHTML += `
+    homeGrid.innerHTML = prompts.filter(p => p.showHome).map((p, i) => {
+        const idx = prompts.indexOf(p);
+        return `
             <div class="card">
-                ${p.image ? `<img src="${p.image}" alt="${p.title}">` : ''}
+                ${p.image ? `<img src="${p.image}">` : ''}
                 <div class="card-content">
                     <h3>${p.title}</h3>
                     <p>${p.category}</p>
                     <div class="actions" style="margin-top:12px">
-                        <button class="btn secondary" onclick="copyPrompt(${originalIndex})">📋 نسخ</button>
-                        <button class="btn primary" onclick="editPromptInHome(${originalIndex})">تعديل</button>
+                        <button class="btn secondary" onclick="copyPrompt(${idx})">📋 نسخ</button>
+                        <button class="btn primary" onclick="editPromptInHome(${idx})">تعديل</button>
                     </div>
                 </div>
             </div>
         `;
-    });
+    }).join('');
 
     // Prompts List
     const list = document.getElementById('list');
     list.innerHTML = prompts.map((p, i) => `
         <div class="card">
-            ${p.image ? `<img src="${p.image}" alt="${p.title}">` : ''}
+            ${p.image ? `<img src="${p.image}">` : ''}
             <div class="card-content">
                 <h3>${p.title}</h3>
-                <p>${p.category} • ${p.platform}</p>
+                <p><strong>${p.category}</strong> • ${p.platform}</p>
                 ${p.desc ? `<p>${p.desc}</p>` : ''}
                 <div class="actions" style="margin-top:12px">
                     <button class="btn secondary" onclick="copyPrompt(${i})">📋 نسخ</button>
@@ -182,7 +190,7 @@ function render() {
 
 function addCategory() {
     const name = document.getElementById('catName').value.trim();
-    if (name) {
+    if (name && !categories.includes(name)) {
         categories.push(name);
         saveData();
         render();
@@ -196,7 +204,7 @@ function renderCategories() {
     container.innerHTML = categories.map((cat, i) => `
         <div class="card">
             <h3>${cat}</h3>
-            <div style="margin-top:10px">
+            <div style="margin-top:12px">
                 <button onclick="editCategory(${i})" class="btn primary">تعديل</button>
                 <button onclick="deleteCategory(${i})" class="btn" style="background:#ef4444;color:white">حذف</button>
             </div>
@@ -214,19 +222,18 @@ function editCategory(i) {
 }
 
 function deleteCategory(i) {
-    if (confirm('حذف القسم؟')) {
+    if (confirm('حذف هذا القسم؟')) {
         categories.splice(i, 1);
         saveData();
         render();
     }
 }
 
-// Notifications
 function addNotification() {
     const title = document.getElementById('notifTitle').value.trim();
     const desc = document.getElementById('notifDesc').value.trim();
     if (title) {
-        notifications.unshift({ title, desc, date: new Date().toISOString() });
+        notifications.unshift({ title, desc });
         saveData();
         renderNotifications();
         document.getElementById('notifTitle').value = '';
