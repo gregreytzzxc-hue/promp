@@ -13,7 +13,7 @@ window.onload = async () => {
     render();
 };
 
-// ========== LOAD ==========
+// ===== LOAD =====
 async function loadAll() {
     const { data: p } = await supabase.from("prompts").select("*");
     const { data: c } = await supabase.from("categories").select("*");
@@ -24,26 +24,20 @@ async function loadAll() {
     notifications = n || [];
 }
 
-// ========== SAVE PROMPT ==========
+// ===== SAVE PROMPT + IMAGE =====
 async function savePrompt() {
 
     let imageUrl = document.getElementById("image").value;
     const file = document.getElementById("imageUpload").files[0];
 
-    // رفع الصورة
     if (file) {
         const fileName = Date.now() + "_" + file.name;
 
-        const { error } = await supabase.storage
+        await supabase.storage
             .from("images")
             .upload(fileName, file);
 
-        if (!error) {
-            imageUrl =
-                SUPABASE_URL +
-                "/storage/v1/object/public/images/" +
-                fileName;
-        }
+        imageUrl = `${SUPABASE_URL}/storage/v1/object/public/images/${fileName}`;
     }
 
     const obj = {
@@ -51,9 +45,7 @@ async function savePrompt() {
         image: imageUrl,
         category: document.getElementById("category").value,
         prompt: document.getElementById("prompt").value,
-        description: document.getElementById("desc").value,
-        platform: document.getElementById("platform").value,
-        show_home: document.getElementById("showHome").checked
+        created_at: new Date()
     };
 
     await supabase.from("prompts").insert([obj]);
@@ -63,7 +55,7 @@ async function savePrompt() {
     toggleForm();
 }
 
-// ========== CATEGORY ==========
+// ===== CATEGORY =====
 async function addCategory() {
     const name = document.getElementById("catName").value;
 
@@ -73,35 +65,32 @@ async function addCategory() {
     render();
 }
 
-// ========== NOTIFICATION ==========
+// ===== NOTIFICATION =====
 async function addNotification() {
     const title = document.getElementById("notifTitle").value;
     const desc = document.getElementById("notifDesc").value;
 
-    await supabase.from("notifications").insert([{
-        title,
-        description: desc
-    }]);
+    await supabase.from("notifications").insert([{ title, description: desc }]);
 
     await loadAll();
     render();
 }
 
-// ========== DELETE PROMPT ==========
+// ===== DELETE =====
 async function deletePrompt(id) {
     await supabase.from("prompts").delete().eq("id", id);
     await loadAll();
     render();
 }
 
-// ========== RENDER ==========
+// ===== RENDER =====
 function render() {
 
     document.getElementById("stats").innerHTML =
-        `<p>عدد البرومبتات: ${prompts.length}</p>`;
+        `Prompts: ${prompts.length}`;
 
     document.getElementById("homeGrid").innerHTML =
-        prompts.filter(p => p.show_home).map(p => `
+        prompts.map(p => `
             <div>
                 <img src="${p.image}" width="120">
                 <h3>${p.title}</h3>
@@ -123,12 +112,12 @@ function render() {
         notifications.map(n => `<p>${n.title}</p>`).join("");
 }
 
-// ========== FORM ==========
+// ===== FORM =====
 function toggleForm() {
     document.getElementById("form").classList.toggle("hidden");
 }
 
-// ========== IMAGE ==========
+// ===== IMAGE =====
 function handleImageUpload() {
     document.getElementById("imageUpload").addEventListener("change", e => {
         const file = e.target.files[0];
@@ -138,7 +127,7 @@ function handleImageUpload() {
     });
 }
 
-// ========== TABS ==========
+// ===== TABS =====
 function showTab(id) {
     document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
     document.getElementById(id).classList.add("active");
