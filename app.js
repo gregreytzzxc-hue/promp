@@ -7,14 +7,13 @@ let prompts = [];
 let categories = [];
 let notifications = [];
 
-// ================= START =================
+// ===== START =====
 window.onload = async () => {
     await loadAll();
-    handleImageUpload();
     render();
 };
 
-// ================= LOAD =================
+// ===== LOAD =====
 async function loadAll() {
     const { data: p } = await supabase.from("prompts").select("*");
     const { data: c } = await supabase.from("categories").select("*");
@@ -23,13 +22,12 @@ async function loadAll() {
     prompts = p || [];
     categories = c || [];
     notifications = n || [];
+
+    fillCategories();
 }
 
-// ================= SAVE PROMPT =================
+// ===== SAVE PROMPT =====
 async function savePrompt() {
-
-    const title = document.getElementById("title").value;
-    if (!title) return alert("اكتب العنوان");
 
     let imageUrl = document.getElementById("image").value;
     const file = document.getElementById("imageUpload").files[0];
@@ -47,12 +45,11 @@ async function savePrompt() {
     }
 
     const obj = {
-        title,
+        title: document.getElementById("title").value,
         image: imageUrl,
         category: document.getElementById("category").value,
         prompt: document.getElementById("prompt").value,
         description: document.getElementById("desc").value,
-        platform: document.getElementById("platform").value,
         video_link: document.getElementById("videoLink").value,
         show_home: document.getElementById("showHome").checked
     };
@@ -60,8 +57,7 @@ async function savePrompt() {
     const { error } = await supabase.from("prompts").insert([obj]);
 
     if (error) {
-        console.log(error);
-        alert("Error saving prompt");
+        alert(error.message);
         return;
     }
 
@@ -70,7 +66,7 @@ async function savePrompt() {
     toggleForm();
 }
 
-// ================= CATEGORY =================
+// ===== CATEGORY =====
 async function addCategory() {
     const name = document.getElementById("catName").value;
 
@@ -80,7 +76,7 @@ async function addCategory() {
     render();
 }
 
-// ================= NOTIFICATION =================
+// ===== NOTIFICATION =====
 async function addNotification() {
     const title = document.getElementById("notifTitle").value;
     const desc = document.getElementById("notifDesc").value;
@@ -94,19 +90,18 @@ async function addNotification() {
     render();
 }
 
-// ================= DELETE =================
+// ===== DELETE =====
 async function deletePrompt(id) {
     await supabase.from("prompts").delete().eq("id", id);
-
     await loadAll();
     render();
 }
 
-// ================= RENDER =================
+// ===== RENDER =====
 function render() {
 
     document.getElementById("stats").innerHTML =
-        `<p>عدد البرومبتات: ${prompts.length}</p>`;
+        `<p>Total Prompts: ${prompts.length}</p>`;
 
     document.getElementById("homeGrid").innerHTML =
         prompts.filter(p => p.show_home).map(p => `
@@ -120,7 +115,7 @@ function render() {
         prompts.map(p => `
             <div class="card">
                 <h3>${p.title}</h3>
-                <button onclick="deletePrompt(${p.id})">حذف</button>
+                <button onclick="deletePrompt(${p.id})">Delete</button>
             </div>
         `).join("");
 
@@ -131,23 +126,22 @@ function render() {
         notifications.map(n => `<div class="card">${n.title}</div>`).join("");
 }
 
-// ================= FORM =================
+// ===== UI =====
 function toggleForm() {
     document.getElementById("form").classList.toggle("hidden");
 }
 
-// ================= IMAGE =================
-function handleImageUpload() {
-    document.getElementById("imageUpload").addEventListener("change", e => {
-        const file = e.target.files[0];
-        if (file) {
-            document.getElementById("image").value = file.name;
-        }
-    });
-}
-
-// ================= TABS =================
 function showTab(id) {
     document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
     document.getElementById(id).classList.add("active");
+}
+
+// ===== FILL CATEGORIES =====
+function fillCategories() {
+    const select = document.getElementById("category");
+    if (!select) return;
+
+    select.innerHTML = categories.map(c =>
+        `<option value="${c.name}">${c.name}</option>`
+    ).join("");
 }
