@@ -7,31 +7,31 @@ let prompts = [];
 let categories = [];
 let notifications = [];
 
-// ================= START =================
+/* ===== START ===== */
 window.onload = async () => {
     await loadAll();
-    fillCategories();
+    handleImageUpload();
     render();
 };
 
-// ================= LOAD =================
+/* ===== LOAD ===== */
 async function loadAll() {
-    const { data: p } = await supabase.from("prompts").select("*").order("id", { ascending: false });
+    const { data: p } = await supabase.from("prompts").select("*");
     const { data: c } = await supabase.from("categories").select("*");
     const { data: n } = await supabase.from("notifications").select("*");
 
     prompts = p || [];
     categories = c || [];
     notifications = n || [];
+
+    fillCategories();
 }
 
-// ================= ADD PROMPT =================
-async function savePrompt() {
-
-    let imageUrl = document.getElementById("image").value;
+/* ===== SAVE PROMPT ===== */
+async function addPrompt() {
     const file = document.getElementById("imageUpload").files[0];
+    let imageUrl = document.getElementById("image").value;
 
-    // رفع صورة
     if (file) {
         const fileName = Date.now() + "_" + file.name;
 
@@ -49,7 +49,7 @@ async function savePrompt() {
         image: imageUrl,
         category: document.getElementById("category").value,
         prompt: document.getElementById("prompt").value,
-        desc: document.getElementById("desc").value,
+        description: document.getElementById("desc").value,
         platform: document.getElementById("platform").value,
         video_link: document.getElementById("videoLink").value,
         show_home: document.getElementById("showHome").checked
@@ -67,25 +67,17 @@ async function savePrompt() {
     toggleForm();
 }
 
-// ================= DELETE =================
-async function deletePrompt(id) {
-    await supabase.from("prompts").delete().eq("id", id);
-    await loadAll();
-    render();
-}
-
-// ================= CATEGORY =================
+/* ===== CATEGORY ===== */
 async function addCategory() {
     const name = document.getElementById("catName").value;
 
     await supabase.from("categories").insert([{ name }]);
 
     await loadAll();
-    fillCategories();
     render();
 }
 
-// ================= NOTIFICATION =================
+/* ===== NOTIFICATIONS ===== */
 async function addNotification() {
     const title = document.getElementById("notifTitle").value;
     const desc = document.getElementById("notifDesc").value;
@@ -99,62 +91,64 @@ async function addNotification() {
     render();
 }
 
-// ================= RENDER =================
+/* ===== DELETE ===== */
+async function deletePrompt(id) {
+    await supabase.from("prompts").delete().eq("id", id);
+    await loadAll();
+    render();
+}
+
+/* ===== RENDER ===== */
 function render() {
 
-    document.getElementById("stats").innerHTML = `
-        <div class="stat-card">
-            <h3>${prompts.length}</h3>
-            <p>البرومبتات</p>
-        </div>
-    `;
+    document.getElementById("stats").innerHTML =
+        `<div class="stat-card">${prompts.length} برومبت</div>`;
 
-    // HOME
     document.getElementById("homeGrid").innerHTML =
         prompts.filter(p => p.show_home).map(p => `
             <div class="card">
                 <img src="${p.image || ''}">
                 <div class="card-content">
                     <h3>${p.title}</h3>
-                    <p>${p.category || ''}</p>
                 </div>
             </div>
         `).join("");
 
-    // LIST
     document.getElementById("list").innerHTML =
         prompts.map(p => `
             <div class="card">
                 <h3>${p.title}</h3>
-                <p>${p.category || ''}</p>
                 <button onclick="deletePrompt(${p.id})">حذف</button>
             </div>
         `).join("");
 
-    // CATEGORIES
     document.getElementById("catList").innerHTML =
         categories.map(c => `
-            <div class="card">
-                ${c.name}
-            </div>
+            <div class="card">${c.name}</div>
         `).join("");
 
-    // NOTIFICATIONS
     document.getElementById("notifList").innerHTML =
         notifications.map(n => `
-            <div class="card">
-                <h3>${n.title}</h3>
-                <p>${n.description || ''}</p>
-            </div>
+            <div class="card">${n.title}</div>
         `).join("");
 }
 
-// ================= FORM =================
+/* ===== FORM ===== */
 function toggleForm() {
     document.getElementById("form").classList.toggle("hidden");
 }
 
-// ================= CATEGORIES SELECT =================
+/* ===== IMAGE ===== */
+function handleImageUpload() {
+    document.getElementById("imageUpload").addEventListener("change", e => {
+        const file = e.target.files[0];
+        if (file) {
+            document.getElementById("image").value = file.name;
+        }
+    });
+}
+
+/* ===== FILL CATEGORIES ===== */
 function fillCategories() {
     const select = document.getElementById("category");
     if (!select) return;
@@ -164,7 +158,7 @@ function fillCategories() {
     ).join("");
 }
 
-// ================= TABS =================
+/* ===== TABS ===== */
 function showTab(id) {
     document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
     document.getElementById(id).classList.add("active");
