@@ -1,84 +1,126 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Prompt Hub</title>
-
-<link rel="stylesheet" href="style.css">
-
-<!-- Supabase -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prompt Hub Pro</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h2>Prompt Hub</h2>
+            <button class="toggle-btn" onclick="toggleSidebar()">✕</button>
+        </div>
+        <button onclick="showTab('home')" class="nav-btn active">🏠 الرئيسية</button>
+        <button onclick="showTab('prompts')" class="nav-btn">📝 البرومبتات</button>
+        <button onclick="showTab('categories')" class="nav-btn">📂 الأقسام</button>
+        <button onclick="showTab('notifications')" class="nav-btn">🔔 الإشعارات</button>
+        <button onclick="showTab('settings')" class="nav-btn">⚙️ الإعدادات</button>
 
-<!-- SIDEBAR -->
-<div class="sidebar">
-    <button onclick="showTab('home')">الرئيسية</button>
-    <button onclick="showTab('prompts')">البرومبتات</button>
-    <button onclick="showTab('categories')">الأقسام</button>
-    <button onclick="showTab('notifications')">الإشعارات</button>
-</div>
+        <div class="sidebar-footer">
+            <button onclick="toggleTheme()" id="theme-btn">🌙</button>
+        </div>
+    </div>
 
-<div class="main">
+    <!-- Main -->
+    <div class="main">
+        <!-- HOME -->
+        <div id="home" class="tab active">
+            <h1 class="page-title">الرئيسية</h1>
+            <div id="stats" class="stats-grid"></div>
+            <h2 class="section-title">البرومبتات المميزة</h2>
+            <div class="grid" id="homeGrid"></div>
+        </div>
 
-<!-- HOME -->
-<div id="home" class="tab active">
-    <h1>Dashboard</h1>
-    <div id="stats"></div>
-    <div id="homeGrid"></div>
-</div>
+        <!-- PROMPTS -->
+        <div id="prompts" class="tab hidden">
+            <div class="header">
+                <h1 class="page-title">البرومبتات</h1>
+                <button class="btn primary" onclick="toggleForm()">+ إضافة برومبت</button>
+            </div>
+            
+            <input type="text" id="search" placeholder="🔍 ابحث عن برومبت..." oninput="render()">
 
-<!-- PROMPTS -->
-<div id="prompts" class="tab hidden">
+            <div id="form" class="form hidden">
+                <h3>إضافة / تعديل برومبت</h3>
+                <input id="title" placeholder="عنوان البرومبت" required>
+                
+                <input type="file" id="imageUpload" accept="image/*">
+                <input id="image" placeholder="أو رابط الصورة" style="margin-top:8px">
 
-<h2>Prompts</h2>
+                <select id="category">
+                    <option value="ترند">ترند</option>
+                    <option value="سينمائي">سينمائي</option>
+                    <option value="جيبلي">جيبلي</option>
+                    <option value="أنمي">أنمي</option>
+                    <option value="واقعي">واقعي</option>
+                </select>
+                
+                <textarea id="prompt" rows="6" placeholder="البرومبت هنا..."></textarea>
+                <textarea id="desc" rows="3" placeholder="الشرح / الوصف"></textarea>
+                
+                <select id="platform">
+                    <option value="YouTube">YouTube</option>
+                    <option value="TikTok">TikTok</option>
+                    <option value="Instagram">Instagram</option>
+                </select>
+                
+                <input id="videoLink" placeholder="رابط الفيديو (اختياري)">
+                <label><input type="checkbox" id="showHome"> إظهار في الرئيسية</label>
+                
+                <div class="form-buttons">
+                    <button class="btn secondary" onclick="toggleForm()">إلغاء</button>
+                    <button class="btn primary" onclick="addPrompt()">حفظ</button>
+                </div>
+            </div>
 
-<button onclick="toggleForm()">+ إضافة برومبت</button>
+            <div id="list" class="grid"></div>
+        </div>
 
-<div id="form" class="hidden">
+        <!-- CATEGORIES -->
+        <div id="categories" class="tab hidden">
+            <h1 class="page-title">الأقسام</h1>
+            <div class="form">
+                <input id="catName" placeholder="اسم القسم الجديد">
+                <button class="btn primary" onclick="addCategory()">إضافة</button>
+            </div>
+            <div id="catList"></div>
+        </div>
 
-<input id="title" placeholder="Title">
-<input id="image" placeholder="Image URL">
-<input type="file" id="imageUpload">
+        <!-- NOTIFICATIONS -->
+        <div id="notifications" class="tab hidden">
+            <h1 class="page-title">الإشعارات</h1>
+            <div class="form">
+                <input id="notifTitle" placeholder="عنوان الإشعار">
+                <textarea id="notifDesc" rows="3" placeholder="وصف الإشعار"></textarea>
+                <button class="btn primary" onclick="addNotification()">إضافة إشعار</button>
+            </div>
+            <div id="notifList"></div>
+        </div>
 
-<select id="category"></select>
+        <!-- SETTINGS -->
+        <div id="settings" class="tab hidden">
+            <h1 class="page-title">الإعدادات</h1>
+            <div class="card">
+                <h3>تواصل معنا</h3>
+                <a href="https://t.me/yourchannel" target="_blank" class="setting-link">📱 قناة التليجرام</a>
+            </div>
+            <div class="card">
+                <h3>سياسة الخصوصية</h3>
+                <a href="#" class="setting-link">📄 اقرأ سياسة الخصوصية</a>
+            </div>
+            <div class="card">
+                <h3>رابط تليجرام</h3>
+                <a href="https://t.me/yourbot" target="_blank" class="setting-link">💬 التواصل المباشر</a>
+            </div>
+        </div>
+    </div>
 
-<textarea id="prompt" placeholder="Prompt"></textarea>
-<textarea id="desc" placeholder="Description"></textarea>
+    <div id="toast" class="toast"></div>
 
-<input id="videoLink" placeholder="Video link">
-
-<label>
-<input type="checkbox" id="showHome"> Show Home
-</label>
-
-<button onclick="savePrompt()">حفظ</button>
-
-</div>
-
-<div id="list"></div>
-
-</div>
-
-<!-- CATEGORIES -->
-<div id="categories" class="tab hidden">
-<input id="catName">
-<button onclick="addCategory()">Add Category</button>
-<div id="catList"></div>
-</div>
-
-<!-- NOTIFICATIONS -->
-<div id="notifications" class="tab hidden">
-<input id="notifTitle">
-<input id="notifDesc">
-<button onclick="addNotification()">Add</button>
-<div id="notifList"></div>
-</div>
-
-</div>
-
-<script src="app.js"></script>
+    <script src="app.js"></script>
 </body>
 </html>
