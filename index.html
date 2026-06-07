@@ -3,15 +3,18 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Prompt Hub Pro</title>
+<title>Prompt Hub</title>
 
 <link rel="stylesheet" href="style.css">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+
+<!-- Supabase -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 
 <body>
 
-<div class="sidebar" id="sidebar">
+<!-- SIDEBAR -->
+<div class="sidebar">
     <button onclick="showTab('home')">الرئيسية</button>
     <button onclick="showTab('prompts')">البرومبتات</button>
     <button onclick="showTab('categories')">الأقسام</button>
@@ -22,7 +25,7 @@
 
 <!-- HOME -->
 <div id="home" class="tab active">
-    <h1>Home</h1>
+    <h1>Dashboard</h1>
     <div id="stats"></div>
     <div id="homeGrid"></div>
 </div>
@@ -32,17 +35,24 @@
 
 <h2>Prompts</h2>
 
-<button onclick="toggleForm()">+ إضافة</button>
+<button onclick="toggleForm()">+ إضافة برومبت</button>
 
 <div id="form" class="hidden">
 
-<input id="title" placeholder="title">
+<input id="title" placeholder="Title">
+<input id="image" placeholder="Image URL">
 <input type="file" id="imageUpload">
-<input id="image" placeholder="image url">
 
 <select id="category"></select>
 
-<textarea id="prompt"></textarea>
+<textarea id="prompt" placeholder="Prompt"></textarea>
+<textarea id="desc" placeholder="Description"></textarea>
+
+<input id="videoLink" placeholder="Video link">
+
+<label>
+<input type="checkbox" id="showHome"> Show Home
+</label>
 
 <button onclick="savePrompt()">حفظ</button>
 
@@ -55,7 +65,7 @@
 <!-- CATEGORIES -->
 <div id="categories" class="tab hidden">
 <input id="catName">
-<button onclick="addCategory()">Add</button>
+<button onclick="addCategory()">Add Category</button>
 <div id="catList"></div>
 </div>
 
