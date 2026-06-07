@@ -1,74 +1,197 @@
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Prompt Hub Pro</title>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Cairo', sans-serif;
+}
 
-<link rel="stylesheet" href="style.css">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
-</head>
+body {
+    background: #f4f6fb;
+    color: #1f2937;
+    transition: 0.3s;
+}
 
-<body>
+/* ========== DARK MODE ========== */
+body.dark {
+    background: #0f172a;
+    color: #e5e7eb;
+}
 
-<div class="sidebar" id="sidebar">
-    <button onclick="showTab('home')">الرئيسية</button>
-    <button onclick="showTab('prompts')">البرومبتات</button>
-    <button onclick="showTab('categories')">الأقسام</button>
-    <button onclick="showTab('notifications')">الإشعارات</button>
-</div>
+/* ========== LAYOUT ========== */
+.sidebar {
+    position: fixed;
+    right: 0;
+    top: 0;
+    width: 240px;
+    height: 100vh;
+    background: #111827;
+    color: white;
+    padding: 20px;
+}
 
-<div class="main">
+.sidebar button {
+    width: 100%;
+    padding: 12px;
+    margin: 6px 0;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    background: #1f2937;
+    color: white;
+    transition: 0.2s;
+}
 
-<!-- HOME -->
-<div id="home" class="tab active">
-    <h1>Home</h1>
-    <div id="stats"></div>
-    <div id="homeGrid"></div>
-</div>
+.sidebar button:hover {
+    background: #3b82f6;
+}
 
-<!-- PROMPTS -->
-<div id="prompts" class="tab hidden">
+/* ========== MAIN ========== */
+.main {
+    margin-right: 240px;
+    padding: 25px;
+}
 
-<h2>Prompts</h2>
+/* ========== TABS ========== */
+.tab {
+    display: none;
+}
 
-<button onclick="toggleForm()">+ إضافة</button>
+.tab.active {
+    display: block;
+}
 
-<div id="form" class="hidden">
+/* ========== TITLES ========== */
+h1, h2 {
+    margin-bottom: 15px;
+}
 
-<input id="title" placeholder="title">
-<input type="file" id="imageUpload">
-<input id="image" placeholder="image url">
+/* ========== INPUTS ========== */
+input, textarea, select {
+    width: 100%;
+    padding: 12px;
+    margin: 8px 0;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    outline: none;
+    font-size: 14px;
+}
 
-<select id="category"></select>
+body.dark input,
+body.dark textarea,
+body.dark select {
+    background: #1e293b;
+    border-color: #334155;
+    color: white;
+}
 
-<textarea id="prompt"></textarea>
+/* ========== BUTTONS ========== */
+button {
+    padding: 10px 15px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: 0.2s;
+}
 
-<button onclick="savePrompt()">حفظ</button>
+button:hover {
+    transform: scale(1.03);
+}
 
-</div>
+/* ========== PRIMARY BUTTON ========== */
+.btn-primary {
+    background: #3b82f6;
+    color: white;
+}
 
-<div id="list"></div>
+/* ========== CARDS ========== */
+.card {
+    background: white;
+    border-radius: 15px;
+    padding: 15px;
+    margin: 10px 0;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    transition: 0.3s;
+}
 
-</div>
+.card:hover {
+    transform: translateY(-5px);
+}
 
-<!-- CATEGORIES -->
-<div id="categories" class="tab hidden">
-<input id="catName">
-<button onclick="addCategory()">Add</button>
-<div id="catList"></div>
-</div>
+body.dark .card {
+    background: #1e293b;
+}
 
-<!-- NOTIFICATIONS -->
-<div id="notifications" class="tab hidden">
-<input id="notifTitle">
-<input id="notifDesc">
-<button onclick="addNotification()">Add</button>
-<div id="notifList"></div>
-</div>
+/* ========== IMAGE ========== */
+.card img {
+    width: 100%;
+    border-radius: 12px;
+    margin-bottom: 10px;
+}
 
-</div>
+/* ========== GRID ========== */
+#homeGrid,
+#list,
+#catList,
+#notifList {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 15px;
+}
 
-<script src="app.js"></script>
-</body>
-</html>
+/* ========== STATS ========== */
+#stats {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+}
+
+#stats p {
+    background: #3b82f6;
+    color: white;
+    padding: 10px 15px;
+    border-radius: 10px;
+}
+
+/* ========== FORM ========== */
+.form {
+    background: white;
+    padding: 15px;
+    border-radius: 15px;
+    margin: 15px 0;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+}
+
+body.dark .form {
+    background: #1e293b;
+}
+
+/* ========== TOAST ========== */
+#toast {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    background: #10b981;
+    color: white;
+    padding: 12px 18px;
+    border-radius: 10px;
+    display: none;
+}
+
+/* ========== IMAGE UPLOAD ========== */
+input[type="file"] {
+    background: #f1f5f9;
+    padding: 10px;
+}
+
+/* ========== RESPONSIVE ========== */
+@media (max-width: 768px) {
+    .sidebar {
+        width: 200px;
+    }
+
+    .main {
+        margin-right: 200px;
+    }
+}
