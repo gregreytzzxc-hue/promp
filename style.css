@@ -2,56 +2,39 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: 'Cairo', sans-serif;
+    font-family: Arial;
 }
 
 body {
     background: #f4f6fb;
-    color: #1f2937;
-    transition: 0.3s;
 }
 
-/* ========== DARK MODE ========== */
-body.dark {
-    background: #0f172a;
-    color: #e5e7eb;
-}
-
-/* ========== LAYOUT ========== */
 .sidebar {
     position: fixed;
     right: 0;
     top: 0;
-    width: 240px;
+    width: 220px;
     height: 100vh;
     background: #111827;
-    color: white;
-    padding: 20px;
+    padding: 15px;
 }
 
 .sidebar button {
     width: 100%;
     padding: 12px;
-    margin: 6px 0;
-    border: none;
-    border-radius: 10px;
-    cursor: pointer;
+    margin: 5px 0;
     background: #1f2937;
     color: white;
-    transition: 0.2s;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
 }
 
-.sidebar button:hover {
-    background: #3b82f6;
-}
-
-/* ========== MAIN ========== */
 .main {
-    margin-right: 240px;
-    padding: 25px;
+    margin-right: 220px;
+    padding: 20px;
 }
 
-/* ========== TABS ========== */
 .tab {
     display: none;
 }
@@ -60,138 +43,33 @@ body.dark {
     display: block;
 }
 
-/* ========== TITLES ========== */
-h1, h2 {
-    margin-bottom: 15px;
-}
-
-/* ========== INPUTS ========== */
 input, textarea, select {
     width: 100%;
-    padding: 12px;
-    margin: 8px 0;
-    border: 1px solid #ddd;
-    border-radius: 10px;
-    outline: none;
-    font-size: 14px;
+    padding: 10px;
+    margin: 6px 0;
 }
 
-body.dark input,
-body.dark textarea,
-body.dark select {
-    background: #1e293b;
-    border-color: #334155;
-    color: white;
-}
-
-/* ========== BUTTONS ========== */
 button {
     padding: 10px 15px;
-    border: none;
-    border-radius: 10px;
-    cursor: pointer;
-    font-weight: bold;
-    transition: 0.2s;
-}
-
-button:hover {
-    transform: scale(1.03);
-}
-
-/* ========== PRIMARY BUTTON ========== */
-.btn-primary {
     background: #3b82f6;
     color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
 }
 
-/* ========== CARDS ========== */
 .card {
     background: white;
-    border-radius: 15px;
-    padding: 15px;
+    padding: 12px;
     margin: 10px 0;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-    transition: 0.3s;
+    border-radius: 10px;
 }
 
-.card:hover {
-    transform: translateY(-5px);
-}
-
-body.dark .card {
-    background: #1e293b;
-}
-
-/* ========== IMAGE ========== */
 .card img {
     width: 100%;
-    border-radius: 12px;
-    margin-bottom: 10px;
-}
-
-/* ========== GRID ========== */
-#homeGrid,
-#list,
-#catList,
-#notifList {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-    gap: 15px;
-}
-
-/* ========== STATS ========== */
-#stats {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-    margin-bottom: 20px;
-}
-
-#stats p {
-    background: #3b82f6;
-    color: white;
-    padding: 10px 15px;
     border-radius: 10px;
 }
 
-/* ========== FORM ========== */
-.form {
-    background: white;
-    padding: 15px;
-    border-radius: 15px;
-    margin: 15px 0;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.08);
-}
-
-body.dark .form {
-    background: #1e293b;
-}
-
-/* ========== TOAST ========== */
-#toast {
-    position: fixed;
-    bottom: 20px;
-    left: 20px;
-    background: #10b981;
-    color: white;
-    padding: 12px 18px;
-    border-radius: 10px;
+.hidden {
     display: none;
-}
-
-/* ========== IMAGE UPLOAD ========== */
-input[type="file"] {
-    background: #f1f5f9;
-    padding: 10px;
-}
-
-/* ========== RESPONSIVE ========== */
-@media (max-width: 768px) {
-    .sidebar {
-        width: 200px;
-    }
-
-    .main {
-        margin-right: 200px;
-    }
 }
