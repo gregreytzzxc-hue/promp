@@ -1,188 +1,74 @@
-* { margin: 0; padding: 0; box-sizing: border-box; }
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Prompt Hub Pro</title>
 
-body {
-    font-family: 'Cairo', sans-serif;
-    background: #f8f9fc;
-    color: #1f2937;
-    line-height: 1.6;
-}
+<link rel="stylesheet" href="style.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+</head>
 
-body.dark {
-    background: #0f172a;
-    color: #e2e8f0;
-}
+<body>
 
-/* Sidebar */
-.sidebar {
-    width: 260px;
-    background: #1e2937;
-    color: white;
-    height: 100vh;
-    position: fixed;
-    padding: 20px;
-    z-index: 100;
-}
+<div class="sidebar" id="sidebar">
+    <button onclick="showTab('home')">الرئيسية</button>
+    <button onclick="showTab('prompts')">البرومبتات</button>
+    <button onclick="showTab('categories')">الأقسام</button>
+    <button onclick="showTab('notifications')">الإشعارات</button>
+</div>
 
-.sidebar-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 30px;
-}
+<div class="main">
 
-.nav-btn {
-    width: 100%;
-    padding: 14px;
-    margin: 6px 0;
-    border: none;
-    border-radius: 10px;
-    background: rgba(255,255,255,0.08);
-    color: white;
-    text-align: right;
-    cursor: pointer;
-    transition: 0.3s;
-}
+<!-- HOME -->
+<div id="home" class="tab active">
+    <h1>Home</h1>
+    <div id="stats"></div>
+    <div id="homeGrid"></div>
+</div>
 
-.nav-btn.active, .nav-btn:hover {
-    background: #3b82f6;
-}
+<!-- PROMPTS -->
+<div id="prompts" class="tab hidden">
 
-/* Main */
-.main {
-    margin-right: 260px;
-    padding: 30px;
-    min-height: 100vh;
-}
+<h2>Prompts</h2>
 
-.tab { display: none; }
-.tab.active { display: block; }
+<button onclick="toggleForm()">+ إضافة</button>
 
-.page-title { margin-bottom: 20px; font-size: 2rem; }
-.section-title { margin: 30px 0 15px; font-size: 1.4rem; }
+<div id="form" class="hidden">
 
-.grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 20px;
-}
+<input id="title" placeholder="title">
+<input type="file" id="imageUpload">
+<input id="image" placeholder="image url">
 
-.card {
-    background: white;
-    border-radius: 16px;
-    overflow: hidden;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-    transition: 0.3s;
-}
+<select id="category"></select>
 
-body.dark .card { background: #1e2937; }
+<textarea id="prompt"></textarea>
 
-.card:hover {
-    transform: translateY(-6px);
-    box-shadow: 0 12px 25px rgba(0,0,0,0.15);
-}
+<button onclick="savePrompt()">حفظ</button>
 
-.card img {
-    width: 100%;
-    height: 190px;
-    object-fit: cover;
-}
+</div>
 
-.card-content { padding: 15px; }
+<div id="list"></div>
 
-/* Form */
-.form {
-    background: white;
-    padding: 25px;
-    border-radius: 16px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-    margin: 20px 0;
-}
+</div>
 
-body.dark .form { background: #1e2937; }
+<!-- CATEGORIES -->
+<div id="categories" class="tab hidden">
+<input id="catName">
+<button onclick="addCategory()">Add</button>
+<div id="catList"></div>
+</div>
 
-input, select, textarea {
-    width: 100%;
-    padding: 12px;
-    margin: 8px 0;
-    border: 1px solid #ddd;
-    border-radius: 10px;
-    font-size: 1rem;
-}
+<!-- NOTIFICATIONS -->
+<div id="notifications" class="tab hidden">
+<input id="notifTitle">
+<input id="notifDesc">
+<button onclick="addNotification()">Add</button>
+<div id="notifList"></div>
+</div>
 
-body.dark input, body.dark select, body.dark textarea {
-    background: #334155;
-    border-color: #475569;
-    color: white;
-}
+</div>
 
-#imageUpload {
-    padding: 10px;
-    background: #f8f9fc;
-    border: 2px dashed #94a3b8;
-    border-radius: 10px;
-    cursor: pointer;
-}
-
-body.dark #imageUpload {
-    background: #334155;
-    border-color: #64748b;
-}
-
-textarea { resize: vertical; }
-
-/* Buttons */
-.btn {
-    padding: 10px 18px;
-    border: none;
-    border-radius: 10px;
-    cursor: pointer;
-    font-weight: 600;
-}
-
-.btn.primary { background: #3b82f6; color: white; }
-.btn.secondary { background: #64748b; color: white; }
-
-.form-buttons {
-    display: flex;
-    gap: 12px;
-    margin-top: 15px;
-}
-
-/* Stats */
-.stats-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-    gap: 15px;
-    margin-bottom: 25px;
-}
-
-.stat-card {
-    background: white;
-    padding: 20px;
-    border-radius: 12px;
-    text-align: center;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.06);
-}
-
-body.dark .stat-card { background: #1e2937; }
-
-/* Toast */
-.toast {
-    position: fixed;
-    bottom: 30px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: #10b981;
-    color: white;
-    padding: 14px 28px;
-    border-radius: 12px;
-    display: none;
-    z-index: 1000;
-}
-
-/* Responsive */
-@media (max-width: 992px) {
-    .sidebar { transform: translateX(-100%); transition: 0.4s; }
-    .sidebar.open { transform: translateX(0); }
-    .main { margin-right: 0; }
-}
+<script src="app.js"></script>
+</body>
+</html>
