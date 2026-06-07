@@ -7,13 +7,14 @@ let prompts = [];
 let categories = [];
 let notifications = [];
 
+// ========== START ==========
 window.onload = async () => {
     await loadAll();
     handleImageUpload();
     render();
 };
 
-// ===== LOAD =====
+// ========== LOAD ==========
 async function loadAll() {
     const { data: p } = await supabase.from("prompts").select("*");
     const { data: c } = await supabase.from("categories").select("*");
@@ -24,7 +25,7 @@ async function loadAll() {
     notifications = n || [];
 }
 
-// ===== SAVE PROMPT + IMAGE =====
+// ========== ADD PROMPT ==========
 async function savePrompt() {
 
     let imageUrl = document.getElementById("image").value;
@@ -33,11 +34,13 @@ async function savePrompt() {
     if (file) {
         const fileName = Date.now() + "_" + file.name;
 
-        await supabase.storage
+        const { error } = await supabase.storage
             .from("images")
             .upload(fileName, file);
 
-        imageUrl = `${SUPABASE_URL}/storage/v1/object/public/images/${fileName}`;
+        if (!error) {
+            imageUrl = `${SUPABASE_URL}/storage/v1/object/public/images/${fileName}`;
+        }
     }
 
     const obj = {
@@ -45,17 +48,26 @@ async function savePrompt() {
         image: imageUrl,
         category: document.getElementById("category").value,
         prompt: document.getElementById("prompt").value,
-        created_at: new Date()
+        description: document.getElementById("desc").value,
+        platform: document.getElementById("platform").value,
+        video_link: document.getElementById("videoLink").value,
+        show_home: document.getElementById("showHome").checked
     };
 
-    await supabase.from("prompts").insert([obj]);
+    const { error } = await supabase.from("prompts").insert([obj]);
+
+    if (error) {
+        console.log(error);
+        alert("Error saving prompt");
+        return;
+    }
 
     await loadAll();
     render();
     toggleForm();
 }
 
-// ===== CATEGORY =====
+// ========== CATEGORY ==========
 async function addCategory() {
     const name = document.getElementById("catName").value;
 
@@ -65,59 +77,70 @@ async function addCategory() {
     render();
 }
 
-// ===== NOTIFICATION =====
+// ========== NOTIFICATIONS ==========
 async function addNotification() {
     const title = document.getElementById("notifTitle").value;
     const desc = document.getElementById("notifDesc").value;
 
-    await supabase.from("notifications").insert([{ title, description: desc }]);
+    await supabase.from("notifications").insert([{
+        title,
+        description: desc
+    }]);
 
     await loadAll();
     render();
 }
 
-// ===== DELETE =====
+// ========== DELETE ==========
 async function deletePrompt(id) {
     await supabase.from("prompts").delete().eq("id", id);
     await loadAll();
     render();
 }
 
-// ===== RENDER =====
+// ========== RENDER ==========
 function render() {
 
     document.getElementById("stats").innerHTML =
-        `Prompts: ${prompts.length}`;
+        `<div>عدد البرومبتات: ${prompts.length}</div>`;
 
     document.getElementById("homeGrid").innerHTML =
-        prompts.map(p => `
-            <div>
-                <img src="${p.image}" width="120">
+        prompts.filter(p => p.show_home).map(p => `
+            <div class="card">
+                <img src="${p.image || ''}">
                 <h3>${p.title}</h3>
             </div>
         `).join("");
 
     document.getElementById("list").innerHTML =
         prompts.map(p => `
-            <div>
+            <div class="card">
                 <h3>${p.title}</h3>
                 <button onclick="deletePrompt(${p.id})">حذف</button>
             </div>
         `).join("");
 
     document.getElementById("catList").innerHTML =
-        categories.map(c => `<p>${c.name}</p>`).join("");
+        categories.map(c => `
+            <div class="card">
+                ${c.name}
+            </div>
+        `).join("");
 
     document.getElementById("notifList").innerHTML =
-        notifications.map(n => `<p>${n.title}</p>`).join("");
+        notifications.map(n => `
+            <div class="card">
+                ${n.title}
+            </div>
+        `).join("");
 }
 
-// ===== FORM =====
+// ========== FORM ==========
 function toggleForm() {
     document.getElementById("form").classList.toggle("hidden");
 }
 
-// ===== IMAGE =====
+// ========== IMAGE UPLOAD ==========
 function handleImageUpload() {
     document.getElementById("imageUpload").addEventListener("change", e => {
         const file = e.target.files[0];
@@ -127,7 +150,7 @@ function handleImageUpload() {
     });
 }
 
-// ===== TABS =====
+// ========== TABS ==========
 function showTab(id) {
     document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
     document.getElementById(id).classList.add("active");
