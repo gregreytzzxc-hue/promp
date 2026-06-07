@@ -1,20 +1,20 @@
 const SUPABASE_URL = "https://wohyuqiqvvrdhqgxovyt.supabase.co";
-const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndvaHl1cWlxdnZyZGhxZ3hvdnl0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA3NjU5NjIsImV4cCI6MjA5NjM0MTk2Mn0.h_-Kx-K9sdY-IHUsmrWbU79M9bv8bLQFKpvki3mrz80";
+const SUPABASE_KEY = "PUT_YOUR_ANON_KEY_HERE";
 
-const supabase = window.supabase.createClient(https://wohyuqiqvvrdhqgxovyt.supabase.co);
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 let prompts = [];
 let categories = [];
 let notifications = [];
 
-// ========== START ==========
+// ================= START =================
 window.onload = async () => {
     await loadAll();
     handleImageUpload();
     render();
 };
 
-// ========== LOAD ==========
+// ================= LOAD =================
 async function loadAll() {
     const { data: p } = await supabase.from("prompts").select("*");
     const { data: c } = await supabase.from("categories").select("*");
@@ -25,8 +25,11 @@ async function loadAll() {
     notifications = n || [];
 }
 
-// ========== ADD PROMPT ==========
+// ================= SAVE PROMPT =================
 async function savePrompt() {
+
+    const title = document.getElementById("title").value;
+    if (!title) return alert("اكتب العنوان");
 
     let imageUrl = document.getElementById("image").value;
     const file = document.getElementById("imageUpload").files[0];
@@ -44,7 +47,7 @@ async function savePrompt() {
     }
 
     const obj = {
-        title: document.getElementById("title").value,
+        title,
         image: imageUrl,
         category: document.getElementById("category").value,
         prompt: document.getElementById("prompt").value,
@@ -67,7 +70,7 @@ async function savePrompt() {
     toggleForm();
 }
 
-// ========== CATEGORY ==========
+// ================= CATEGORY =================
 async function addCategory() {
     const name = document.getElementById("catName").value;
 
@@ -77,7 +80,7 @@ async function addCategory() {
     render();
 }
 
-// ========== NOTIFICATIONS ==========
+// ================= NOTIFICATION =================
 async function addNotification() {
     const title = document.getElementById("notifTitle").value;
     const desc = document.getElementById("notifDesc").value;
@@ -91,18 +94,19 @@ async function addNotification() {
     render();
 }
 
-// ========== DELETE ==========
+// ================= DELETE =================
 async function deletePrompt(id) {
     await supabase.from("prompts").delete().eq("id", id);
+
     await loadAll();
     render();
 }
 
-// ========== RENDER ==========
+// ================= RENDER =================
 function render() {
 
     document.getElementById("stats").innerHTML =
-        `<div>عدد البرومبتات: ${prompts.length}</div>`;
+        `<p>عدد البرومبتات: ${prompts.length}</p>`;
 
     document.getElementById("homeGrid").innerHTML =
         prompts.filter(p => p.show_home).map(p => `
@@ -121,26 +125,18 @@ function render() {
         `).join("");
 
     document.getElementById("catList").innerHTML =
-        categories.map(c => `
-            <div class="card">
-                ${c.name}
-            </div>
-        `).join("");
+        categories.map(c => `<div class="card">${c.name}</div>`).join("");
 
     document.getElementById("notifList").innerHTML =
-        notifications.map(n => `
-            <div class="card">
-                ${n.title}
-            </div>
-        `).join("");
+        notifications.map(n => `<div class="card">${n.title}</div>`).join("");
 }
 
-// ========== FORM ==========
+// ================= FORM =================
 function toggleForm() {
     document.getElementById("form").classList.toggle("hidden");
 }
 
-// ========== IMAGE UPLOAD ==========
+// ================= IMAGE =================
 function handleImageUpload() {
     document.getElementById("imageUpload").addEventListener("change", e => {
         const file = e.target.files[0];
@@ -150,7 +146,7 @@ function handleImageUpload() {
     });
 }
 
-// ========== TABS ==========
+// ================= TABS =================
 function showTab(id) {
     document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
     document.getElementById(id).classList.add("active");
