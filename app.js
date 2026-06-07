@@ -1,7 +1,7 @@
 const SUPABASE_URL = "https://wohyuqiqvvrdhqgxovyt.supabase.co";
 const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndvaHl1cWlxdnZyZGhxZ3hvdnl0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA3NjU5NjIsImV4cCI6MjA5NjM0MTk2Mn0.h_-Kx-K9sdY-IHUsmrWbU79M9bv8bLQFKpvki3mrz80";
 
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+const supabase = window.supabase.createClient(https://wohyuqiqvvrdhqgxovyt.supabase.co);
 
 let prompts = [];
 let categories = [];
